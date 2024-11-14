@@ -1,0 +1,33 @@
+name: Update Confluence Page
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: "Component name (e.g., cpt1)"
+        required: true
+      environment:
+        description: "Environment name (e.g., DEV)"
+        required: true
+      version:
+        description: "Version number (e.g., 2.3.4)"
+        required: true
+
+jobs:
+  update-confluence:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Update Confluence Page
+        uses: ./
+        with:
+          confluence_base_url: ${{ vars.CONFLUENCE_BASE_URL }}
+          confluence_page_id: ${{ vars.CONFLUENCE_PAGE_ID }}
+          atlassian_username: ${{ secrets.ATLASSIAN_USERNAME }}
+          atlassian_api_token: ${{ secrets.ATLASSIAN_API_TOKEN }}
+          component: ${{ github.event.inputs.component }}
+          environment: ${{ github.event.inputs.environment }}
+          version: ${{ github.event.inputs.version }}
