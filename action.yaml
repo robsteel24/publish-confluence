@@ -1,0 +1,49 @@
+name: "Update Confluence Page"
+description: "Updates a Confluence page with component version info."
+
+inputs:
+  component:
+    description: "The component name (e.g. 'cpt1')"
+    required: true
+  environment:
+    description: "The environment name (e.g., 'DEV')"
+    required: true
+  version:
+    description: "The version number (e.g., '2.3.4')"
+    required: true
+  confluence_base_url:
+    description: "The base URL for the Confluence instance"
+    required: true
+  confluence_page_id:
+    description: "The ID of the Confluence page to update"
+    required: true
+  atlassian_username:
+    description: "The username associated with the Atlassian account"
+    required: true
+  atlassian_api_token:
+    description: "The API token generated for use with the Atlassian account"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ./requirements.txt
+
+    - name: Run Update Confluence Script
+      shell: bash
+      env:
+        ATLASSIAN_USERNAME: ${{ inputs.atlassian_username }}
+        ATLASSIAN_API_TOKEN: ${{ inputs.atlassian_api_token }}
+        CONFLUENCE_BASE_URL: ${{ inputs.confluence_base_url }}
+        CONFLUENCE_PAGE_ID: ${{ inputs.confluence_page_id }}
+      run: |
+        python src/update_confluence.py --component "${{ inputs.component }}" --environment "${{ inputs.environment }}" --version "${{ inputs.version }}"
